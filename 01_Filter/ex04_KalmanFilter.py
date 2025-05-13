@@ -3,8 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 class KalmanFilter:
-    def __init__(self, y_Measure_init, step_time = 0.1, m = 0.1, modelVariance = 0.01, measureVariance = 1.0, errorVariance_init = 10.0):
-        self.A = (1.0)
+    def __init__(self, y_Measure_init, step_time = 0.1, m = 0.1, modelVariance = 0.1, measureVariance = 0.5, errorVariance_init = 10.0):
+        self.step_time = step_time
+        self.A = 1.0 + step_time
         self.B = step_time/m
         self.C = 1.0
         self.D = 0.0
@@ -14,13 +15,17 @@ class KalmanFilter:
         self.P_estimate = errorVariance_init
 
     def estimate(self, y_measure, input_u):
+        # Compute updated A and B matrices that include Δt
+        A_effective = self.A * self.step_time + 1  # AΔt + I
+        B_effective = self.B * self.step_time  # BΔt
+
         # Prediction
-        x_pred = self.A * self.x_estimate + self.B * input_u
-        P_pred = self.A * self.P_estimate * self.A + self.Q
-        
+        x_pred = A_effective * self.x_estimate + B_effective * input_u
+        P_pred = A_effective * self.P_estimate * A_effective + self.Q
+
         # Kalman Gain
         K = P_pred * self.C / (self.C * P_pred * self.C + self.R)
-        
+
         # Update
         self.x_estimate = x_pred + K * (y_measure - self.C * x_pred)
         self.P_estimate = (1 - K * self.C) * P_pred
