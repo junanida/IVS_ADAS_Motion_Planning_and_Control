@@ -15,17 +15,12 @@ class KalmanFilter:
 
     def estimate(self, y_measure, input_u):
         # Prediction
-        x_pred = self.A @ self.x_estimate + self.B * input_u  # 상태 예측
-        P_pred = self.A @ self.P_estimate @ self.A.T + self.Q  # 오차 공분산 예측
-
-        # 업데이트 단계 (칼만 이득 계산)
-        S = self.C @ P_pred @ self.C.T + self.R  # 측정 예측 오차
-        K = P_pred @ self.C.T @ np.linalg.inv(S)  # 칼만 이득 계산
-
+        self.x_prediction = self.A @ self.x_estimate + self.B * input_u  # 상태 예측
+        self.P_prediction = (self.A) @ self.P_estimate @ (self.A.T) + self.Q  # 오차 공분산 예측
         # Update
-        y_pred = self.C @ x_pred  # 예측된 측정값
-        self.x_estimate = x_pred + K @ (y_measure - y_pred)  # 상태 업데이트
-        self.P_estimate = (np.eye(2) - K @ self.C) @ P_pred  # 오차 공분산 업데이트
+        self.kalman_gain = (self.P_prediction@self.C.T)/((self.C@self.P_prediction@self.C.T)+self.R)
+        self.x_estimate = self.x_prediction + self.kalman_gain * (y_measure - self.C@self.x_prediction)
+        self.P_estimate = (np.identity(2) - self.kalman_gain@self.C)@self.P_prediction
 
 
 if __name__ == "__main__":
