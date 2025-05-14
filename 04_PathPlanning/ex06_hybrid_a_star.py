@@ -16,12 +16,12 @@ class Node:
         self.h = 0
 
 # Check if position of node is same( if distance < threshold, regard as same node)
-def isSamePosition(node_1, node_2, epsilon_position=0.3):
+def isSamePosition(node_1, node_2, epsilon_position=0.1):
     dx = node_1.position[0] - node_2.position[0]
     dy = node_1.position[1] - node_2.position[1]
     return math.hypot(dx, dy) < epsilon_position # True or False
 
-def isSameYaw(node_1, node_2, epsilon_yaw=0.2):
+def isSameYaw(node_1, node_2, epsilon_yaw=0.05):
     dyaw = abs(node_1.heading - node_2.heading)
     dyaw = dyaw if dyaw < math.pi else 2*math.pi - dyaw
     return dyaw < epsilon_yaw # True or False
