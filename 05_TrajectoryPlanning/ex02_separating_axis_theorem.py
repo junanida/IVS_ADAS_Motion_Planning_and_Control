@@ -1,6 +1,27 @@
+# This code performs collision testing of convex 2D polyedra by means
+# of the Hyperplane separation theorem, also known as Separating axis theorem (SAT).
+#
+# For more information visit:
+# https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
+#
+# Copyright (C) 2016, Juan Antonio Aldea Armenteros
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 import math
 import matplotlib.pyplot as plt
 
+
+# -*- coding: utf8 -*-
 
 def normalize(v):
     norm = math.sqrt(v[0] ** 2 + v[1] ** 2)
@@ -20,8 +41,8 @@ def vertices_to_edges(vertices):
         for i in range(len(vertices))]
 
 def project(vertices, axis):
-    # Code
-    return [0, 0]
+    dots = [dot(vertex, axis) for vertex in vertices]
+    return [min(dots), max(dots)]
 
 def contains(n, range_):
     a = range_[0]
@@ -32,7 +53,14 @@ def contains(n, range_):
     return (n >= a) and (n <= b)
 
 def overlap(a, b):
-    # Code
+    if contains(a[0], b):
+        return True
+    if contains(a[1], b):
+        return True
+    if contains(b[0], a):
+        return True
+    if contains(b[1], a):
+        return True
     return False
 
 def separating_axis_theorem(vertices_a, vertices_b):
